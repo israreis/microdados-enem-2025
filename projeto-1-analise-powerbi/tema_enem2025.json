@@ -1,0 +1,105 @@
+{
+  "name": "ENEM 2025",
+  "dataColors": [
+    "#2A9D8F",
+    "#8E6CC6",
+    "#E76F51",
+    "#1D4E89",
+    "#E9A23B",
+    "#4A78AE",
+    "#7FA3CC",
+    "#264653",
+    "#B3C8E0",
+    "#94A3B8"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#0B2545",
+  "tableAccent": "#1D4E89",
+  "good": "#2A9D8F",
+  "neutral": "#E9A23B",
+  "bad": "#E76F51",
+  "textClasses": {
+    "callout": {
+      "fontSize": 26,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#0B2545"
+    },
+    "title": {
+      "fontSize": 13,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#0B2545"
+    },
+    "header": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#0B2545"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#64748B"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E5E7EB"
+              }
+            },
+            "radius": 12
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
+        "visualHeader": [
+          {
+            "show": true
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F4F6FA"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#E9EDF3"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

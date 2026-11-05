@@ -1,0 +1,205 @@
+// ============================================================
+// Medidas DAX do relatório "ENEM 2025 em números"
+// Crie uma tabela vazia chamada _Medidas (Página Inicial > Inserir dados > Carregar)
+// e cole cada medida abaixo em Nova medida, dentro dessa tabela.
+// ============================================================
+
+// ---------- Participação ----------
+Inscritos = SUM ( fato_resultados[inscritos] )
+
+Presentes nas 4 provas = SUM ( fato_resultados[presentes_todas] )
+
+Taxa de presença (4 provas) = DIVIDE ( [Presentes nas 4 provas], [Inscritos] )
+
+Abstenção dia 1 = 1 - DIVIDE ( SUM ( fato_resultados[presentes_dia1] ), [Inscritos] )
+
+Abstenção dia 2 = 1 - DIVIDE ( SUM ( fato_resultados[presentes_dia2] ), [Inscritos] )
+
+// Quem foi ao 1º dia e não voltou no 2º
+Desistência entre os dias =
+1 - DIVIDE ( SUM ( fato_resultados[presentes_dia2] ), SUM ( fato_resultados[presentes_dia1] ) )
+
+// ---------- Notas médias (média ponderada correta a partir das somas) ----------
+Média CN = DIVIDE ( SUM ( fato_resultados[soma_nota_CN] ), SUM ( fato_resultados[n_nota_CN] ) )
+Média CH = DIVIDE ( SUM ( fato_resultados[soma_nota_CH] ), SUM ( fato_resultados[n_nota_CH] ) )
+Média LC = DIVIDE ( SUM ( fato_resultados[soma_nota_LC] ), SUM ( fato_resultados[n_nota_LC] ) )
+Média MT = DIVIDE ( SUM ( fato_resultados[soma_nota_MT] ), SUM ( fato_resultados[n_nota_MT] ) )
+Média Redação = DIVIDE ( SUM ( fato_resultados[soma_redacao] ), SUM ( fato_resultados[n_redacao] ) )
+
+Média geral (5 provas) =
+AVERAGEX (
+    { [Média CN], [Média CH], [Média LC], [Média MT], [Média Redação] },
+    [Value]
+)
+
+// Desvio padrão a partir de soma e soma dos quadrados
+Desvio padrão MT =
+VAR n = SUM ( fato_resultados[n_nota_MT] )
+VAR media = [Média MT]
+RETURN SQRT ( DIVIDE ( SUM ( fato_resultados[soma_quad_nota_MT] ), n ) - media ^ 2 )
+
+// Use com um segmentador de dim_area (tabela desconectada de fato_resultados)
+Média da área selecionada =
+SWITCH (
+    SELECTEDVALUE ( dim_area[SG_AREA], "MT" ),
+    "CN", [Média CN],
+    "CH", [Média CH],
+    "LC", [Média LC],
+    "MT", [Média MT],
+    "REDACAO", [Média Redação]
+)
+
+// ---------- Desigualdade ----------
+Média área (privada) = CALCULATE ( [Média da área selecionada], dim_rede[rede_grupo] = "Privada" )
+Média área (pública) = CALCULATE ( [Média da área selecionada], dim_rede[rede_grupo] = "Pública" )
+Gap privada - pública = [Média área (privada)] - [Média área (pública)]
+
+// ---------- Redação ----------
+Redações nota 1000 = SUM ( fato_resultados[redacao_mil] )
+% Redação 900+ = DIVIDE ( SUM ( fato_resultados[redacao_900_mais] ), SUM ( fato_resultados[n_redacao] ) )
+% Redação zerada = DIVIDE ( SUM ( fato_resultados[redacao_zero] ), SUM ( fato_resultados[n_redacao] ) )
+
+Média Competência 1 = DIVIDE ( SUM ( fato_resultados[soma_comp1] ), SUM ( fato_resultados[n_redacao] ) )
+Média Competência 2 = DIVIDE ( SUM ( fato_resultados[soma_comp2] ), SUM ( fato_resultados[n_redacao] ) )
+Média Competência 3 = DIVIDE ( SUM ( fato_resultados[soma_comp3] ), SUM ( fato_resultados[n_redacao] ) )
+Média Competência 4 = DIVIDE ( SUM ( fato_resultados[soma_comp4] ), SUM ( fato_resultados[n_redacao] ) )
+Média Competência 5 = DIVIDE ( SUM ( fato_resultados[soma_comp5] ), SUM ( fato_resultados[n_redacao] ) )
+
+Redações (status) = SUM ( fato_redacao_status[participantes] )
+% do status =
+DIVIDE ( [Redações (status)], CALCULATE ( [Redações (status)], ALL ( dim_status_redacao ) ) )
+
+// ---------- Questões ----------
+% Acerto = DIVIDE ( SUM ( fato_itens[acertos] ), SUM ( fato_itens[respostas] ) )
+% Em branco = DIVIDE ( SUM ( fato_itens[brancos] ), SUM ( fato_itens[respostas] ) )
+// Acerto esperado só no chute (5 alternativas)
+Acerto acima do chute = [% Acerto] - 0.2
+
+// ---------- Distribuição de notas ----------
+Participantes (distribuição) = SUM ( fato_distribuicao[participantes] )
+% na faixa =
+DIVIDE (
+    [Participantes (distribuição)],
+    CALCULATE ( [Participantes (distribuição)], ALL ( fato_distribuicao[faixa_inicio] ) )
+)
+
+// ---------- Perfil dos inscritos (PARTICIPANTES: não cruza com notas) ----------
+Inscritos (perfil) = SUM ( fato_perfil[inscritos] )
+% dos inscritos (perfil) =
+DIVIDE ( [Inscritos (perfil)], CALCULATE ( [Inscritos (perfil)], ALLSELECTED () ) )
+
+// ---------- Página 1: gráfico de médias com destaque ----------
+// Requer a tabela calculada:  dim_area_eixo = ALL ( dim_area )   (sem relacionamentos)
+Média por prova =
+SWITCH (
+    SELECTEDVALUE ( dim_area_eixo[SG_AREA] ),
+    "CN", [Média CN],
+    "CH", [Média CH],
+    "LC", [Média LC],
+    "MT", [Média MT],
+    "REDACAO", [Média Redação]
+)
+
+Cor da prova =
+IF (
+    SELECTEDVALUE ( dim_area_eixo[SG_AREA] ) = SELECTEDVALUE ( dim_area[SG_AREA] ),
+    "#0B2545",
+    "#B3C8E0"
+)
+
+Título UF = "Média por UF · " & SELECTEDVALUE ( dim_area[area], "Matemática" )
+
+// ---------- Página 2: desigualdade ----------
+UF com maior diferença =
+VAR t =
+    ADDCOLUMNS (
+        FILTER ( VALUES ( dim_uf[uf] ), dim_uf[uf] <> "Não informado" ),
+        "@gap", [Gap privada - pública]
+    )
+VAR top1 = TOPN ( 1, FILTER ( t, NOT ISBLANK ( [@gap] ) ), [@gap], DESC )
+RETURN MAXX ( top1, dim_uf[uf] )
+
+Maior diferença (pontos) =
+VAR t =
+    ADDCOLUMNS (
+        FILTER ( VALUES ( dim_uf[uf] ), dim_uf[uf] <> "Não informado" ),
+        "@gap", [Gap privada - pública]
+    )
+RETURN MAXX ( t, [@gap] )
+
+Cor da rede =
+SWITCH (
+    SELECTEDVALUE ( dim_rede[rede_grupo] ),
+    "Pública", "#2A9D8F",
+    "Privada", "#1D4E89",
+    "#94A3B8"
+)
+
+Título gap = "Diferença privada − pública por UF · " & SELECTEDVALUE ( dim_area[area], "Matemática" )
+Título rede = "Média por rede de ensino · " & SELECTEDVALUE ( dim_area[area], "Matemática" )
+Título distribuição = "Distribuição das notas · " & SELECTEDVALUE ( dim_area[area], "Matemática" ) & " · Brasil"
+
+// ---------- Página 3: redação ----------
+// Tabela calculada (Modelagem > Nova tabela), sem relacionamentos:
+// dim_competencia =
+// DATATABLE (
+//     "ordem", INTEGER, "competencia", STRING,
+//     {
+//         { 1, "C1 · Norma culta" },
+//         { 2, "C2 · Compreensão do tema" },
+//         { 3, "C3 · Argumentação" },
+//         { 4, "C4 · Coesão textual" },
+//         { 5, "C5 · Proposta de intervenção" }
+//     }
+// )
+
+Média por competência =
+SWITCH (
+    SELECTEDVALUE ( dim_competencia[ordem] ),
+    1, [Média Competência 1],
+    2, [Média Competência 2],
+    3, [Média Competência 3],
+    4, [Média Competência 4],
+    5, [Média Competência 5]
+)
+
+% do máximo da competência = DIVIDE ( [Média por competência], 200 )
+
+Redações com problema = CALCULATE ( [Redações (status)], dim_status_redacao[TP_STATUS_REDACAO] <> 1 )
+
+// ---------- Página 4: questões e participantes ----------
+Respostas (itens) = SUM ( fato_itens[respostas] )
+Dificuldade TRI (b) = AVERAGE ( fato_itens[NU_PARAM_B] )
+Discriminação TRI (a) = AVERAGE ( fato_itens[NU_PARAM_A] )
+
+% mulheres =
+DIVIDE ( CALCULATE ( [Inscritos (perfil)], dim_sexo[TP_SEXO] = "F" ), [Inscritos (perfil)] )
+
+% treineiros =
+DIVIDE ( CALCULATE ( [Inscritos (perfil)], fato_perfil[IN_TREINEIRO] = 1 ), [Inscritos (perfil)] )
+
+// ---------- Página 4: filtro da aplicação principal ----------
+// Colunas calculadas em fato_itens (Ferramentas da tabela > Nova coluna).
+// Filtros por coluna são aplicados ANTES do filtro "N superior"; filtros por medida, depois.
+// Respostas do item =
+//     CALCULATE ( SUM ( fato_itens[respostas] ), ALLEXCEPT ( fato_itens, fato_itens[CO_ITEM] ) )
+// Aplicação principal = IF ( fato_itens[Respostas do item] > 100000, "Sim", "Não" )
+
+Questões abaixo do chute =
+COUNTROWS (
+    FILTER (
+        CALCULATETABLE (
+            VALUES ( fato_itens[CO_ITEM] ),
+            fato_itens[Aplicação principal] = "Sim",
+            fato_itens[IN_ITEM_ABAN] = 0
+        ),
+        CALCULATE ( [% Acerto] ) < 0.2
+    )
+)
+
+Questões válidas =
+CALCULATE (
+    DISTINCTCOUNT ( fato_itens[CO_ITEM] ),
+    fato_itens[Aplicação principal] = "Sim",
+    fato_itens[IN_ITEM_ABAN] = 0
+)

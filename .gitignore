@@ -1,0 +1,18 @@
+# Dados brutos e intermediários (grandes demais para o GitHub)
+data/
+*.zip
+
+# Tabelas geradas para o Power BI: regenere com scripts/02_tabelas_powerbi.py.
+# Se quiser publicar as suas, apague a linha abaixo (os CSVs agregados são pequenos).
+projeto-1-analise-powerbi/dados/
+
+# Python / VS Code
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+
+# Power BI: arquivos temporários
+*.pbix.bak
+~$*
