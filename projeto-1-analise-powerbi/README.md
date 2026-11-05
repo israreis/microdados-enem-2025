@@ -1,84 +1,107 @@
-# Projeto 1 · ENEM 2025 em números (Power BI)
+# ENEM 2025 em números · Relatório Power BI
 
-> **Pergunta central:** onde e para quem o ENEM 2025 foi mais difícil — e o que isso diz sobre a desigualdade no ensino médio brasileiro?
+> **Pergunta central:** onde e para quem o ENEM 2025 foi mais difícil, e o que isso diz sobre a desigualdade no ensino médio brasileiro?
 
-Relatório em Power BI construído sobre os microdados oficiais do INEP (4,8 milhões de inscritos). Os dados brutos (2,6 GB) são processados em Python e agregados em tabelas pequenas, que o Power BI carrega em segundos.
+Relatório de 5 páginas construído sobre os microdados oficiais do INEP (4,8 milhões de inscritos). Os dados brutos são processados em Python e agregados em tabelas leves, que o Power BI carrega em segundos.
 
-## Perguntas que o relatório responde
+---
 
-1. **Participação:** quantos inscritos realmente fizeram as provas? Quanto se perde do 1º para o 2º dia, e em quais estados?
-2. **Desigualdade:** qual a diferença de nota entre escolas privadas e públicas em cada UF e área? Onde o gap é maior?
-3. **Redação:** em qual das 5 competências os participantes mais perdem pontos? Por que tantas redações são zeradas?
-4. **Questões:** quais foram as questões mais difíceis e mais fáceis? A dificuldade oficial (parâmetro *b* da TRI) bate com o % de acerto real?
-5. **Perfil:** quem são os inscritos (idade, sexo, cor/raça, renda)?
+## Páginas do relatório
 
-> ⚠️ **Limitação importante dos dados de 2025:** o INEP separou o perfil dos participantes (`PARTICIPANTES_2025.csv`) dos resultados (`RESULTADOS_2025.csv`) sem chave em comum, por causa da LGPD. Por isso **o perfil não pode ser cruzado com as notas** — a página 5 é descritiva e independente. Os cruzamentos de nota são feitos por UF, rede de ensino (federal, estadual, municipal, privada) e localização da escola, que estão no arquivo de resultados.
+| Página | Pergunta | Principais visuais |
+|---|---|---|
+| **1 · Visão geral** | Quantos fizeram a prova e como foi o desempenho? | Indicadores de participação, média por prova, ranking de UFs |
+| **2 · Desigualdade** | Quanto a rede de ensino pesa na nota? | Diferença privada − pública por UF, média por rede, distribuição das notas |
+| **3 · Redação** | Onde os participantes perdem pontos e por que redações zeram? | Média por competência, motivos de nota zero, distribuição das notas |
+| **4 · Questões e participantes** | A dificuldade oficial bate com o acerto real? Quem fez o ENEM? | Dispersão TRI × acerto, 10 questões mais difíceis, perfil dos inscritos |
+| **5 · Conclusões** | O que os dados mostram? | Quatro achados, limitações e metodologia |
 
-## Como reproduzir
+---
 
+## Resultados
+
+### Participação
+Dos **4.810.772 inscritos**, **67,4%** fizeram as quatro provas objetivas. A abstenção foi de **28,1%** no primeiro dia e de **32,2%** no segundo: parte de quem foi ao primeiro dia não voltou para o segundo.
+
+### Desigualdade entre redes
+Em Ciências da Natureza, alunos de escolas **privadas** tiveram média **75 pontos** acima dos de escolas **públicas** (552,0 × 477,0). A diferença varia muito entre estados e chega a **99,6 pontos no Piauí**.
+
+"Escola pública", porém, não é uma categoria homogênea: as escolas **federais** (535,7) ficam próximas das privadas e mais de 60 pontos acima das **estaduais** (472,7), que concentram a maior parte dos alunos. Parte dessa vantagem vem do processo seletivo de muitas escolas federais.
+
+Entre os estados, a média de Matemática vai de **560,5 em São Paulo** a **464,7 no Amazonas**.
+
+### Redação
+A redação teve a **maior média do exame (580,8)**, mas apenas **10 notas 1000** e **5%** de notas acima de 900. Por competência, a mais fraca é a **C5 · proposta de intervenção** (107 de 200) e a mais forte, a **C2 · compreensão do tema** (129).
+
+**6,1%** das redações zeraram. Depois da redação em branco, o motivo mais comum é a **cópia do texto motivador** (~55 mil redações), três vezes mais frequente que a fuga ao tema.
+
+### Questões
+As questões com menor acerto são todas de **Matemática** e **Ciências da Natureza**, com acerto entre **9% e 15%**: abaixo dos 20% esperados no chute. A dispersão entre dificuldade oficial (parâmetro *b* da TRI) e acerto real mostra forte relação negativa, como esperado.
+
+### Perfil dos inscritos
+**60%** dos inscritos são mulheres, e **21%** são treineiros, que fazem a prova antes do último ano do ensino médio.
+
+---
+
+## Metodologia
+
+### Pipeline
 ```bash
-# na raiz do repositório
-python scripts/00_baixar_dados.py        # baixa e extrai (~1 GB)
+python scripts/00_baixar_dados.py        # abre o download do INEP e extrai o zip
 python scripts/01_inspecionar.py         # confere colunas e categorias
 python scripts/02_tabelas_powerbi.py     # gera os CSVs em projeto-1-analise-powerbi/dados/
 ```
 
-## Tabelas geradas (`dados/`)
+O script lê os 2,6 GB em blocos de 400 mil linhas e roda em cerca de 1 minuto. Ao final, imprime os totais para conferência com os números oficiais (4.810.772 inscritos, 3.244.348 presentes nas quatro provas, 10 redações nota 1000).
+
+### Tabelas geradas
 
 | Tabela | Grão (uma linha por...) | Uso |
 |---|---|---|
 | `fato_resultados` | UF × rede × localização | presença, somas de notas e redação |
-| `fato_distribuicao` | área × faixa de 20 pontos × rede | histogramas |
+| `fato_distribuicao` | área × faixa de 20 pontos × rede | distribuição das notas |
 | `fato_redacao_status` | UF × rede × situação da redação | motivos de nota zero |
 | `fato_itens` | questão × rede | % de acerto, parâmetros TRI, habilidade |
 | `fato_perfil` | combinação de características | perfil dos inscritos |
 | `dim_*` | rótulo | UF/região, rede, localização, área, status, sexo, cor/raça, faixa etária |
 
-As tabelas guardam **somas e contagens**, não médias prontas. Assim a média continua correta em qualquer filtro (média de médias daria resultado errado).
+As tabelas guardam **somas e contagens**, não médias prontas. Assim, a média continua correta em qualquer combinação de filtros; uma média de médias daria resultado errado.
 
-## Montando o relatório
-
-### 1. Importar
-*Obter dados > Texto/CSV* para cada arquivo de `dados/` (ou *Pasta* e combinar). Confira que `TP_DEPENDENCIA_ADM_ESC` veio como número inteiro em todas as tabelas.
-
-### 2. Relacionamentos (Exibição de modelo)
+### Modelo de dados (esquema em estrela)
 
 ```
-dim_uf[SG_UF_PROVA]                   1 ── * fato_resultados, fato_redacao_status, fato_perfil
-dim_rede[TP_DEPENDENCIA_ADM_ESC]      1 ── * fato_resultados, fato_distribuicao, fato_redacao_status, fato_itens
-dim_localizacao[TP_LOCALIZACAO_ESC]   1 ── * fato_resultados
-dim_status_redacao[TP_STATUS_REDACAO] 1 ── * fato_redacao_status
-dim_area[SG_AREA]                     1 ── * fato_itens[SG_AREA], fato_distribuicao[area]
-dim_faixa_etaria / dim_sexo / dim_cor_raca  1 ── * fato_perfil
+dim_uf[SG_UF_PROVA]                    1 ── * fato_resultados, fato_redacao_status, fato_perfil
+dim_rede[TP_DEPENDENCIA_ADM_ESC]       1 ── * fato_resultados, fato_distribuicao, fato_redacao_status, fato_itens
+dim_localizacao[TP_LOCALIZACAO_ESC]    1 ── * fato_resultados
+dim_status_redacao[TP_STATUS_REDACAO]  1 ── * fato_redacao_status
+dim_area[SG_AREA]                      1 ── * fato_itens[SG_AREA], fato_distribuicao[area]
+dim_faixa_etaria / dim_sexo / dim_cor_raca   1 ── * fato_perfil
 ```
 
-`dim_area` fica **sem** relação com `fato_resultados`: ela funciona como segmentador da medida *Média da área selecionada*.
+Tabelas auxiliares, sem relacionamentos:
+- `dim_area_eixo = ALL ( dim_area )`: eixo do gráfico de médias por prova, que destaca a área selecionada sem ser filtrado por ela;
+- `dim_competencia`: as 5 competências da redação.
 
-### 3. Medidas
-Todas estão em [`medidas.dax`](medidas.dax), prontas para colar.
+`dim_area` não se relaciona com `fato_resultados`: ela funciona como seletor da medida *Média da área selecionada*.
 
-### 4. Páginas sugeridas
+### Importação no Power Query
+Os CSVs são lidos por uma função `LerCSV`, que define codificação UTF-8, separador decimal no padrão americano e os tipos de cada coluna. Isso evita que o Power BI em português interprete `512.3` como `5123`.
 
-| Página | Visuais |
-|---|---|
-| **1. Visão geral** | Cartões: Inscritos, Taxa de presença, Abstenção dia 1 e dia 2, Média geral. Barras com a média das 5 provas. Mapa coroplético (ou barras) por UF com *Média da área selecionada*. |
-| **2. Desigualdade** | Barras agrupadas por rede. Barras horizontais do *Gap privada - pública* por UF, ordenadas. Matriz UF × rede. Histograma (`fato_distribuicao`) com rede na legenda e *% na faixa* no eixo Y — mostra as curvas deslocadas. |
-| **3. Redação** | Barras com as 5 competências (máx. 200 cada). Rosca ou barras de *% do status* (tirando "Sem problemas"). Cartões: Redações nota 1000, % 900+, % zerada. |
-| **4. Questões** | Dispersão: eixo X = `NU_PARAM_B` (dificuldade TRI), eixo Y = *% Acerto*, detalhes = `CO_ITEM`, legenda = área. Tabela top 10 mais difíceis/fáceis. Barras de *% Acerto* por `CO_HABILIDADE`. Destaque para itens com `IN_ITEM_ABAN = 1` (anulados). |
-| **5. Quem fez o ENEM** | Pirâmide/barras por faixa etária e sexo, cor/raça, renda familiar (`Q006`, conferir rótulos no dicionário). Nota explicando por que não há cruzamento com notas. |
-| **6. Conclusões** | 3 a 5 achados em texto curto, cada um com o número que o sustenta. É a página que recrutadores mais leem. |
+### Medidas
+Todas as medidas DAX estão em [`medidas.dax`](medidas.dax), incluindo colunas calculadas e tabelas auxiliares.
 
-Segmentadores comuns: Região/UF, Rede, Localização.
+### Tema
+O arquivo [`tema_enem2025.json`](tema_enem2025.json) define cores, fontes e o estilo dos visuais (*Exibição > Temas > Procurar temas*).
 
-### 5. Publicar no portfólio
-- Salve o `.pbix` nesta pasta (`enem2025.pbix`).
-- Exporte cada página como imagem para `imagens/` e use no README.
-- Se tiver conta do Power BI Service, use *Publicar na Web* e coloque o link aqui.
+---
 
-## Checagem de sanidade
+## Limitações
 
-Ao rodar com a base completa, o script imprime os totais. Valores divulgados publicamente para comparar: **4.810.772 inscritos**, **3.244.348 presentes em todas as provas objetivas** (≈ 67,4%) e **10 redações nota 1000**. Se os seus números baterem, o pipeline está correto.
+- **Perfil × notas:** o INEP separou `PARTICIPANTES_2025.csv` e `RESULTADOS_2025.csv` sem chave em comum (LGPD). O perfil dos inscritos é apresentado de forma descritiva, sem cruzamento com o desempenho.
+- **Rede de ensino:** só é conhecida para quem estava no ensino médio; egressos aparecem como "sem escola informada".
+- **Causalidade:** diferenças entre redes misturam o efeito da escola com o perfil socioeconômico dos alunos.
+- **Distribuição das notas:** a tabela de distribuição é nacional, por isso esses gráficos não respondem ao filtro de região.
+- **Questões:** as estatísticas por questão consideram apenas a aplicação principal (itens com mais de 100 mil respostas) e excluem itens anulados.
 
 ## Rótulos
-
-Os códigos em `dimensoes/` seguem o dicionário de dados do INEP das edições anteriores. Abra o dicionário que vem no zip de 2025 (`DICIONÁRIO/`) e confirme as categorias — o `01_inspecionar.py` lista todos os códigos encontrados em `data/processed/schema_2025.md`.
+Os códigos em `dimensoes/` seguem o dicionário de dados do INEP. O `01_inspecionar.py` lista todos os códigos encontrados na base em `data/processed/schema_2025.md`, o que permite conferir as categorias com o dicionário que vem no zip de 2025.
