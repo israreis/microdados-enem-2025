@@ -9,6 +9,10 @@ Análise de ponta a ponta dos **microdados oficiais do ENEM 2025** (INEP): 4,8 m
 
 O projeto cobre o ciclo completo de dados: **ingestão** de arquivos grandes em blocos, **validação** contra os números oficiais, **modelagem dimensional** (esquema em estrela) e **comunicação** dos resultados em um relatório pensado para quem decide.
 
+### 📄 [Ver o relatório em PDF](projeto-1-analise-powerbi/Projeto%20ENEM%202025.pdf) &nbsp;·&nbsp; 📊 [Baixar o modelo Power BI (.pbit)](projeto-1-analise-powerbi/Projeto%20ENEM%202025.pbit)
+
+![Página de visão geral do relatório](projeto-1-analise-powerbi/imagens/pagina1.png)
+
 ---
 
 ## Principais resultados
@@ -72,6 +76,9 @@ As tabelas guardam **somas e contagens**, e não médias prontas: assim, as méd
 │   ├── 02_tabelas_powerbi.py       agrega os 4,8 mi de registros em tabelas para o Power BI
 │   └── 03_base_modelo.py           monta a matriz de acertos por questão (base para modelagem)
 ├── projeto-1-analise-powerbi/
+│   ├── Projeto ENEM 2025.pdf       relatório exportado (5 páginas)
+│   ├── Projeto ENEM 2025.pbit      modelo do Power BI (sem dados)
+│   ├── imagens/                    capturas das páginas do relatório
 │   ├── dimensoes/                  tabelas de rótulos (UF, rede, status da redação...)
 │   ├── medidas.dax                 todas as medidas do relatório
 │   └── tema_enem2025.json          tema visual do Power BI
@@ -98,7 +105,7 @@ python scripts/01_inspecionar.py         # confere a estrutura dos arquivos
 python scripts/02_tabelas_powerbi.py     # gera as tabelas do relatório (~1 min)
 ```
 
-Depois, siga o [guia do relatório](projeto-1-analise-powerbi/README.md) para montar o modelo no Power BI.
+Depois, abra o modelo [`Projeto ENEM 2025.pbit`](projeto-1-analise-powerbi/Projeto%20ENEM%202025.pbit) no Power BI Desktop. Detalhes no [guia do relatório](projeto-1-analise-powerbi/README.md#como-abrir-o-relatório).
 
 ### Testar sem baixar a base real
 

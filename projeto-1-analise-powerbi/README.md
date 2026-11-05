@@ -4,6 +4,27 @@
 
 Relatório de 5 páginas construído sobre os microdados oficiais do INEP (4,8 milhões de inscritos). Os dados brutos são processados em Python e agregados em tabelas leves, que o Power BI carrega em segundos.
 
+### 📄 [Ver o relatório em PDF](Projeto%20ENEM%202025.pdf) &nbsp;·&nbsp; 📊 [Baixar o modelo Power BI (.pbit)](Projeto%20ENEM%202025.pbit)
+
+---
+
+## Galeria
+
+**1 · Visão geral**
+![Visão geral](imagens/pagina1.png)
+
+**2 · Desigualdade entre redes de ensino**
+![Desigualdade](imagens/pagina2.png)
+
+**3 · Redação**
+![Redação](imagens/pagina3.png)
+
+**4 · Questões e participantes**
+![Questões e participantes](imagens/pagina4.png)
+
+**5 · Conclusões**
+![Conclusões](imagens/pagina5.png)
+
 ---
 
 ## Páginas do relatório
@@ -40,6 +61,18 @@ As questões com menor acerto são todas de **Matemática** e **Ciências da Nat
 
 ### Perfil dos inscritos
 **60%** dos inscritos são mulheres, e **21%** são treineiros, que fazem a prova antes do último ano do ensino médio.
+
+---
+
+## Como abrir o relatório
+
+O arquivo `.pbit` é um **modelo** do Power BI: contém as páginas, o modelo de dados e as medidas, mas não os dados. Para abri-lo com os dados:
+
+1. Gere as tabelas com o pipeline abaixo (`scripts/02_tabelas_powerbi.py`).
+2. Abra `Projeto ENEM 2025.pbit` no Power BI Desktop.
+3. Se a pasta do projeto estiver em outro lugar, vá em *Transformar dados*, abra a função `LerCSV` e ajuste o caminho em `Pasta` para a sua pasta `projeto-1-analise-powerbi\dados\`. Depois clique em *Fechar e aplicar*.
+
+Para apenas visualizar o resultado, use o [PDF](Projeto%20ENEM%202025.pdf).
 
 ---
 
