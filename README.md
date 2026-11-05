@@ -1,6 +1,6 @@
-# ENEM 2025 · Portfólio de Dados
+# ENEM 2025 · Análise dos MicroDados
 
-Dois projetos sobre a mesma base pública — os **microdados do ENEM 2025** (INEP, 4,8 milhões de inscritos) — mostrando o ciclo completo: engenharia dos dados brutos, análise para tomada de decisão e modelagem.
+Projeto construído com a base pública — os **microdados do ENEM 2025** (INEP, 4,8 milhões de inscritos) — mostrando o ciclo completo: engenharia dos dados brutos, análise para tomada de decisão e modelagem.
 
 | | Projeto | Pergunta | Ferramentas |
 |---|---|---|---|
