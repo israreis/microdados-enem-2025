@@ -124,4 +124,4 @@ INEP · [Microdados do ENEM](https://www.gov.br/inep/pt-br/acesso-a-informacao/d
 
 ## Autor
 
-**Israel dos Reis Costa Junior**
+**Israel dos Reis Costa Junior** &nbsp; [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/israreis/)
